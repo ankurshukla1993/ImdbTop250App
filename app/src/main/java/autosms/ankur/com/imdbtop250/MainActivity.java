@@ -35,13 +35,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements AbsListView.OnScrollListener {
-    //控件
+
     private String TAG = "MainActivity.getData method.OnResponse()" ;
     private ListView listView;
     private Toolbar toolbar;
     private TextView floatTitle;
     private ImageView headerBg;
-    //测量值
+
     private float headerHeight;
     private float minHeaderHeight;
     private float floatTitleLeftMargin;
@@ -169,37 +169,36 @@ public class MainActivity extends AppCompatActivity implements AbsListView.OnScr
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        //Y轴偏移量
+
         float scrollY = getScrollY(view);
 
-        //变化率
+
         float headerBarOffsetY = headerHeight - minHeaderHeight;//Toolbar与header高度的差值
         float offset = 1 - Math.max((headerBarOffsetY - scrollY) / headerBarOffsetY, 0f);
 
-        //Toolbar背景色透明度
+
         toolbar.setBackgroundColor(Color.argb((int) (offset * 255), 0, 0, 0));
-        //header背景图Y轴偏移
+
         headerBg.setTranslationY(scrollY / 2);
 
         /*** 标题文字处理 ***/
-        //标题文字缩放圆心（X轴）
+
         floatTitle.setPivotX(floatTitle.getLeft() + floatTitle.getPaddingLeft());
-        //标题文字缩放比例
+
         float titleScale = floatTitleSize / floatTitleSizeLarge;
-        //标题文字X轴偏移
+
         floatTitle.setTranslationX(floatTitleLeftMargin * offset);
-        //标题文字Y轴偏移：（-缩放高度差 + 大文字与小文字高度差）/ 2 * 变化率 + Y轴滑动偏移
         floatTitle.setTranslationY(
                 (-(floatTitle.getHeight() - minHeaderHeight) +//-缩放高度差
                         floatTitle.getHeight() * (1 - titleScale))//大文字与小文字高度差
                         / 2 * offset +
                         (headerHeight - floatTitle.getHeight()) * (1 - offset));//Y轴滑动偏移
-        //标题文字X轴缩放
+
         floatTitle.setScaleX(1 - offset * (1 - titleScale));
-        //标题文字Y轴缩放
+
         floatTitle.setScaleY(1 - offset * (1 - titleScale));
 
-        //判断标题文字的显示
+        
         if (scrollY > headerBarOffsetY) {
             toolbar.setTitle(getResources().getString(R.string.toolbar_title));
             floatTitle.setVisibility(View.GONE);
