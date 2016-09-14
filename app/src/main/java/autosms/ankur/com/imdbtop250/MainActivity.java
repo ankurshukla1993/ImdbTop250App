@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements AbsListView.OnScr
         progress2 = (CircleProgressBar) findViewById(R.id.progress2);
         progress2.setColorSchemeResources(android.R.color.holo_green_light, android.R.color.holo_orange_light, android.R.color.holo_red_light);
         progress2.setVisibility(View.VISIBLE);
-        getData("https://api.myjson.com/bins/36c2a") ;
+        getData("http://imdbserver-arpitdixit.rhcloud.com/ListServer?task=d") ;
         //getData("http://192.168.1.125:8080/ImdbServer/ListServer?task=d") ;
 
         initMeasure();
