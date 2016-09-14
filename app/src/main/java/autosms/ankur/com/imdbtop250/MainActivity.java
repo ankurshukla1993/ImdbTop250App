@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements AbsListView.OnScr
 
         headerBg.setTranslationY(scrollY / 2);
 
-        /*** 标题文字处理 ***/
+        
 
         floatTitle.setPivotX(floatTitle.getLeft() + floatTitle.getPaddingLeft());
 
@@ -208,9 +208,7 @@ public class MainActivity extends AppCompatActivity implements AbsListView.OnScr
         }
     }
 
-    /**
-     * 得到ListView在Y轴上的偏移
-     */
+
     public float getScrollY(AbsListView view) {
         View c = view.getChildAt(0);
 
