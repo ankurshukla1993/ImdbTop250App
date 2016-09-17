@@ -6,6 +6,5 @@
         android:id="@+id/img_header_bg"
         android:layout_width="match_parent"
         android:scaleType="centerCrop"
-        android:layout_height="match_parent"
-        android:src="@mipmap/header_bg1" />
+        android:layout_height="match_parent"/>
 </FrameLayout>

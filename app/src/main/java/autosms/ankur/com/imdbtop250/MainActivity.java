@@ -1,28 +1,30 @@
 package autosms.ankur.com.imdbtop250;
 
+import android.content.Intent;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AbsListView;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
-import com.android.volley.Cache;
-import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.gson.Gson;
 import com.lsjwzh.widget.materialloadingprogressbar.CircleProgressBar;
 
@@ -30,11 +32,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements AbsListView.OnScrollListener {
+public class MainActivity extends ActionBarActivity  implements AbsListView.OnScrollListener, ConnectivityReceiver.ConnectivityReceiverListener {
 
     private String TAG = "MainActivity.getData method.OnResponse()" ;
     private ListView listView;
@@ -52,26 +53,136 @@ public class MainActivity extends AppCompatActivity implements AbsListView.OnScr
     private Gson gson ;
     private CustomListAdapter adapter ;
 
+    private List<MovieObject> crime ;
+    private List<MovieObject> action ;
+    private List<MovieObject> biography ;
+    private List<MovieObject> western ;
+    private List<MovieObject> drama ;
+    private List<MovieObject> comedy ;
+    private List<MovieObject> animation ;
+    private List<MovieObject> romance ;
+    private List<MovieObject> adventure ;
+    private List<MovieObject> horror ;
+    private List<MovieObject> mystery ;
+    private List<MovieObject> movielist_d ;
+
+    private FloatingActionMenu materialDesignFAM;
+    private FloatingActionButton floatingActionButton1, floatingActionButton2, floatingActionButton3, floatingActionButton4;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Remove title bar
+        //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        /*//Remove notification bar
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);*/
+
         setContentView(R.layout.activity_main);
 
         gson = new Gson();
         movieList = new ArrayList<MovieObject>() ;
+        movielist_d = new ArrayList<MovieObject>() ;
+
+        crime = new ArrayList<MovieObject>() ;
+        action = new ArrayList<MovieObject>() ;
+        biography = new ArrayList<MovieObject>() ;
+        western = new ArrayList<MovieObject>() ;
+        drama = new ArrayList<MovieObject>() ;
+        comedy = new ArrayList<MovieObject>() ;
+        animation = new ArrayList<MovieObject>() ;
+        romance = new ArrayList<MovieObject>() ;
+        adventure = new ArrayList<MovieObject>() ;
+        horror = new ArrayList<MovieObject>() ;
+        mystery = new ArrayList<MovieObject>() ;
+
+        materialDesignFAM = (FloatingActionMenu) findViewById(R.id.material_design_android_floating_action_menu);
+        floatingActionButton1 = (FloatingActionButton) findViewById(R.id.material_design_floating_action_menu_item1);
+        floatingActionButton2 = (FloatingActionButton) findViewById(R.id.material_design_floating_action_menu_item2);
+        floatingActionButton3 = (FloatingActionButton) findViewById(R.id.material_design_floating_action_menu_item3);
+        floatingActionButton4 = (FloatingActionButton) findViewById(R.id.material_design_floating_action_menu_item4);
+
         adapter = new CustomListAdapter(this, movieList);
         progress2 = (CircleProgressBar) findViewById(R.id.progress2);
         progress2.setColorSchemeResources(android.R.color.holo_green_light, android.R.color.holo_orange_light, android.R.color.holo_red_light);
         progress2.setVisibility(View.VISIBLE);
-        getData("http://imdbserver-arpitdixit.rhcloud.com/ListServer?task=d") ;
+        if(checkConnection())
+            getData("http://imdbserver-arpitdixit.rhcloud.com/ListServer?task=d") ;
         //getData("http://192.168.1.125:8080/ImdbServer/ListServer?task=d") ;
+
+        floatingActionButton1.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                //Toast.makeText(MainActivity.this, "movieList = " + movieList.size(), Toast.LENGTH_SHORT).show();
+                adapter = new CustomListAdapter(MainActivity.this,adventure);
+                listView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            }
+        });
+        floatingActionButton2.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                //Toast.makeText(MainActivity.this, "movieList = " + movieList.size(), Toast.LENGTH_SHORT).show();
+                adapter = new CustomListAdapter(MainActivity.this,action);
+                listView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+
+            }
+        });
+        floatingActionButton3.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                //Toast.makeText(MainActivity.this, "movieList = " + movieList.size(), Toast.LENGTH_SHORT).show();
+                adapter = new CustomListAdapter(MainActivity.this,crime);
+                listView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+
+            }
+        });
+
+        floatingActionButton4.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                //Toast.makeText(MainActivity.this, "movieList = " + movieList.size(), Toast.LENGTH_SHORT).show();
+                adapter = new CustomListAdapter(MainActivity.this,movieList);
+                listView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+
+            }
+        });
+
 
         initMeasure();
         initView();
         initListViewHeader();
         initListView();
         initEvent();
+
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Toast.makeText(MainActivity.this, "Description : \n" + movieList.get(position - 1).getDescription(), Toast.LENGTH_SHORT).show();
+                /*Toast.makeText(MainActivity.this, "crime = " + crime.size() + "\n" +
+                        "action = " + action.size() + "\n" +
+                        "biography = " + biography.size() + "\n" +
+                        "western = " + western.size() + "\n" +
+                        "drama = " + drama.size() + "\n" +
+                        "comedy = " + comedy.size() + "\n" +
+                        "animation = " + animation.size() + "\n" +
+                        "romance = " + romance.size() + "\n" +
+                        "adventure = " + adventure.size() + "\n" +
+                        "horror = " + horror.size() + "\n" +
+                        "mystery = " + mystery.size() + "\n", Toast.LENGTH_SHORT).show();*/
+            }
+        });
+
+
+        
     }
 
     private void getData(String urlJsonArry) {
@@ -92,6 +203,53 @@ public class MainActivity extends AppCompatActivity implements AbsListView.OnScr
 
                                 JSONObject movieJson = (JSONObject) response.get(i);
                                 MovieObject movie = gson.fromJson(String.valueOf(movieJson), MovieObject.class);
+                                String g = movie.getGenre() ;
+                                switch (g){
+                                    case "Crime," :
+                                        movie.setGenre("Crime");
+                                        crime.add(movie) ;
+                                        break;
+                                    case "Action," :
+                                        movie.setGenre("Action");
+                                        action.add(movie) ;
+                                        break;
+                                    case "Biography," :
+                                        movie.setGenre("Biography");
+                                        biography.add(movie) ;
+                                        break;
+                                    case "Western," :
+                                        movie.setGenre("Western");
+                                        western.add(movie) ;
+                                        break;
+                                    case "Drama," :
+                                        movie.setGenre("Drama");
+                                        drama.add(movie) ;
+                                        break;
+                                    case "Comedy," :
+                                        movie.setGenre("Comedy");
+                                        comedy.add(movie) ;
+                                        break;
+                                    case "Animation," :
+                                        movie.setGenre("Animation");
+                                        animation.add(movie) ;
+                                        break;
+                                    case "Romance," :
+                                        movie.setGenre("Romance");
+                                        romance.add(movie) ;
+                                        break;
+                                    case "Adventure," :
+                                        movie.setGenre("Adventure");
+                                        adventure.add(movie) ;
+                                        break;
+                                    case "Horror," :
+                                        movie.setGenre("Horror");
+                                        horror.add(movie) ;
+                                        break;
+                                    case "Mystery," :
+                                        movie.setGenre("Mystery");
+                                        mystery.add(movie) ;
+                                        break;
+                                }
                                 movieList.add(movie) ;
                                 int progress = (i/250)*100 ;
                                 progress2.setProgress(progress);
@@ -147,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements AbsListView.OnScr
     private void initListViewHeader() {
         View headerContainer = LayoutInflater.from(this).inflate(R.layout.header, listView, false);
         headerBg = (ImageView) headerContainer.findViewById(R.id.img_header_bg);
-
+        headerBg.setImageResource(R.mipmap.header_bg1);
         listView.addHeaderView(headerContainer);
     }
 
@@ -181,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements AbsListView.OnScr
 
         headerBg.setTranslationY(scrollY / 2);
 
-        
+
 
         floatTitle.setPivotX(floatTitle.getLeft() + floatTitle.getPaddingLeft());
 
@@ -224,4 +382,32 @@ public class MainActivity extends AppCompatActivity implements AbsListView.OnScr
 
         return -top + firstVisiblePosition * c.getHeight() + headerHeight;
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // register connection status listener
+        AppController.getInstance().setConnectivityListener(this);
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+
+        if(!isConnected)
+            Toast.makeText(MainActivity.this, "No Internet Connection....", Toast.LENGTH_LONG).show();
+        else
+            getData("http://imdbserver-arpitdixit.rhcloud.com/ListServer?task=d");
+
+
+    }
+
+    private boolean checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        if(!isConnected)
+            Toast.makeText(MainActivity.this, "No Internet Connection !!", Toast.LENGTH_SHORT).show();
+
+        return isConnected ;
+    }
+
 }

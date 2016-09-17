@@ -38,6 +38,11 @@ public class AppController extends Application {
         return mRequestQueue;
     }
 
+    public void setConnectivityListener(ConnectivityReceiver.ConnectivityReceiverListener listener) {
+        ConnectivityReceiver.connectivityReceiverListener = listener;
+    }
+
+
     public ImageLoader getImageLoader() {
         getRequestQueue();
         if (mImageLoader == null) {
