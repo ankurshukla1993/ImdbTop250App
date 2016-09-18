@@ -1,24 +1,19 @@
 package autosms.ankur.com.imdbtop250;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
@@ -27,11 +22,9 @@ import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.gson.Gson;
 import com.lsjwzh.widget.materialloadingprogressbar.CircleProgressBar;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +45,6 @@ public class MainActivity extends ActionBarActivity  implements AbsListView.OnSc
     private List<MovieObject> movieList ;
     private Gson gson ;
     private CustomListAdapter adapter ;
-
     private List<MovieObject> crime ;
     private List<MovieObject> action ;
     private List<MovieObject> biography ;
@@ -74,6 +66,7 @@ public class MainActivity extends ActionBarActivity  implements AbsListView.OnSc
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         //Remove title bar
         //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -292,6 +285,7 @@ public class MainActivity extends ActionBarActivity  implements AbsListView.OnSc
         listView = (ListView) findViewById(R.id.lv_main);
         floatTitle = (TextView) findViewById(R.id.tv_main_title);
         toolbar = (Toolbar) findViewById(R.id.tb_main);
+        toolbar.setBackgroundColor(Color.parseColor("#DCE775"));
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -331,8 +325,12 @@ public class MainActivity extends ActionBarActivity  implements AbsListView.OnSc
         float scrollY = getScrollY(view);
 
 
-        float headerBarOffsetY = headerHeight - minHeaderHeight;//Toolbar与header高度的差值
+        float headerBarOffsetY = headerHeight - minHeaderHeight;//Toolbar And header height difference
         float offset = 1 - Math.max((headerBarOffsetY - scrollY) / headerBarOffsetY, 0f);
+
+
+        if(scrollY<=0){toolbar.setVisibility(View.GONE);}
+        else {toolbar.setVisibility(View.VISIBLE) ;}
 
 
         toolbar.setBackgroundColor(Color.argb((int) (offset * 255), 0, 0, 0));
@@ -347,10 +345,10 @@ public class MainActivity extends ActionBarActivity  implements AbsListView.OnSc
 
         floatTitle.setTranslationX(floatTitleLeftMargin * offset);
         floatTitle.setTranslationY(
-                (-(floatTitle.getHeight() - minHeaderHeight) +//-缩放高度差
-                        floatTitle.getHeight() * (1 - titleScale))//大文字与小文字高度差
+                (-(floatTitle.getHeight() - minHeaderHeight) +//- Zoom height difference
+                        floatTitle.getHeight() * (1 - titleScale))//Large text and small text height difference
                         / 2 * offset +
-                        (headerHeight - floatTitle.getHeight()) * (1 - offset));//Y轴滑动偏移
+                        (headerHeight - floatTitle.getHeight()) * (1 - offset));//Y-axis slide offset
 
         floatTitle.setScaleX(1 - offset * (1 - titleScale));
 
